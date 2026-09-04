@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyQuest — Turn Your Syllabus Into an Adventure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0B0F19;
+  --bg2:#111827;
+  --card:#161F36;
+  --card-hover:#1D2748;
+  --border: rgba(255,255,255,0.12);
+  --purple:#7C3AED;
+  --purple-glow:#9061F9;
+  --purple-shadow:#4C1D95;
+  --emerald:#10B981;
+  --emerald-shadow:#065F46;
+  --amber:#F59E0B;
+  --amber-shadow:#92400E;
+  --cyan:#38BDF8;
+  --cyan-shadow:#0E5A78;
+  --crimson:#EF4444;
+  --crimson-shadow:#7F1D1D;
+  --text:#F3F4F6;
+  --text-dim:#9CA3AF;
+  --text-faint:#6B7280;
+}
+*{box-sizing:border-box; margin:0; padding:0;}
+button{color:inherit;}
+body{
+  background:radial-gradient(ellipse at top, #131B31 0%, var(--bg) 55%);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+  line-height:1.5;
+}
+h1,h2,h3,h4{ font-family:'Outfit',sans-serif; }
+img{max-width:100%;display:block;}
+button{font-family:inherit; cursor:pointer;}
+a{color:inherit;}
+.wrap{max-width:1180px; margin:0 auto; padding:0 28px;}
+
+/* ---------- NAV ---------- */
+.nav{
+  position:sticky; top:0; z-index:50;
+  background:rgba(11,15,25,0.85); backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+}
+.nav-inner{max-width:1180px;margin:0 auto;padding:16px 28px;display:flex;align-items:center;justify-content:space-between;gap:16px;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;cursor:pointer;}
+.brand-badge{width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--purple),var(--cyan));display:flex;align-items:center;justify-content:center;font-size:17px;}
+.nav-stats{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.pill{
+  display:flex;align-items:center;gap:6px;
+  background:var(--card); border:1.5px solid var(--border); border-radius:999px;
+  padding:6px 13px; font-size:14px; font-weight:600; white-space:nowrap;
+}
+.pill.xp{color:var(--amber);}
+.pill.streak{color:#FB923C;}
+.mode-toggle{
+  display:flex; background:var(--card); border:1.5px solid var(--border); border-radius:999px; padding:3px; gap:2px;
+}
+.mode-toggle button{
+  border:none; background:transparent; color:var(--text-dim); font-weight:700; font-size:13px;
+  padding:8px 16px; border-radius:999px; transition:.15s;
+}
+.mode-toggle button.active.adventure{background:var(--purple); color:#fff;}
+.mode-toggle button.active.focused{background:var(--cyan); color:#03222F;}
+
+/* ---------- BUTTONS ---------- */
+.btn{
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  border-radius:14px; border:2px solid transparent; font-weight:700; font-size:15px;
+  padding:13px 24px; transition:transform .08s ease, box-shadow .08s ease;
+}
+.btn-purple{ background:var(--purple); border-color:var(--purple-glow); color:#fff; box-shadow:0 6px 0 var(--purple-shadow);}
+.btn-purple:active{ transform:translateY(4px); box-shadow:0 2px 0 var(--purple-shadow); }
+.btn-cyan{ background:var(--cyan); border-color:#7DD3FC; color:#04202B; box-shadow:0 6px 0 var(--cyan-shadow);}
+.btn-cyan:active{ transform:translateY(4px); box-shadow:0 2px 0 var(--cyan-shadow); }
+.btn-outline{ background:transparent; border-color:var(--border); color:var(--text); box-shadow:0 6px 0 rgba(255,255,255,0.06);}
+.btn-outline:active{ transform:translateY(4px); box-shadow:0 2px 0 rgba(255,255,255,0.06);}
+.btn-emerald{ background:var(--emerald); border-color:#34D399; color:#052e22; box-shadow:0 6px 0 var(--emerald-shadow);}
+.btn-emerald:active{ transform:translateY(4px); box-shadow:0 2px 0 var(--emerald-shadow);}
+.btn:disabled{opacity:.45; cursor:not-allowed;}
+.btn-sm{padding:9px 16px; font-size:13px; border-radius:11px;}
+
+/* ---------- HERO ---------- */
+.hero{ padding:64px 0 44px; }
+.hero-grid{display:grid; grid-template-columns:1.1fr 0.9fr; gap:48px; align-items:center;}
+.eyebrow{color:var(--purple-glow); font-weight:700; font-size:14px; letter-spacing:.02em; margin-bottom:14px;}
+.hero h1{ font-size:48px; line-height:1.08; font-weight:800; margin-bottom:18px;}
+.hero h1 .grad{ background:linear-gradient(135deg,#A78BFA,#38BDF8); -webkit-background-clip:text; background-clip:text; color:transparent;}
+.hero p{ color:var(--text-dim); font-size:17px; max-width:520px; margin-bottom:28px;}
+.hero-actions{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:22px;}
+.social-row{display:flex; align-items:center; gap:12px; color:var(--text-dim); font-size:14px;}
+.avatars{display:flex;}
+.avatars span{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--purple),var(--cyan));border:2px solid var(--bg);margin-left:-8px;display:flex;align-items:center;justify-content:center;font-size:13px;}
+.avatars span:first-child{margin-left:0;}
+
+.hero-art{
+  background:var(--card); border:2px solid var(--border); border-radius:26px;
+  padding:26px; box-shadow:0 8px 0 rgba(0,0,0,.35);
+  position:relative; overflow:hidden;
+}
+.hero-art .screen{
+  background:linear-gradient(160deg,#0E1A33,#101534); border-radius:16px; padding:22px;
+  border:1px solid var(--border);
+}
+.hero-art .screen .lvl{color:var(--cyan); font-weight:800; font-size:13px; letter-spacing:.03em; margin-bottom:8px;}
+.bar-track{height:8px; border-radius:99px; background:rgba(255,255,255,.08); overflow:hidden; margin-top:10px;}
+.bar-fill{height:100%; background:linear-gradient(90deg,var(--purple),var(--cyan)); border-radius:99px;}
+.hero-art .caption{margin-top:16px; color:var(--text-faint); font-size:13px;}
+.floaty-badge{
+  position:absolute; background:var(--card); border:2px solid var(--border); border-radius:14px;
+  padding:9px 13px; font-size:12px; font-weight:700; box-shadow:0 5px 0 rgba(0,0,0,.3);
+}
+.fb1{top:14px; right:-10px; color:var(--amber);}
+.fb2{bottom:18px; left:-12px; color:var(--emerald);}
+
+/* ---------- FEATURES ---------- */
+.features{ display:grid; grid-template-columns:repeat(4,1fr); gap:16px; padding:32px 0; border-top:1px solid var(--border); border-bottom:1px solid var(--border); margin:16px 0 44px;}
+.feature{display:flex; gap:12px; align-items:flex-start;}
+.feature .ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.feature h4{font-size:15px; margin-bottom:3px;}
+.feature p{font-size:13px; color:var(--text-dim);}
+
+/* ---------- MODE OPTION CARDS ---------- */
+.section-title{text-align:center; margin-bottom:34px;}
+.section-title h2{font-size:30px; margin-bottom:8px;}
+.section-title p{color:var(--text-dim); font-size:15px;}
+.options{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:56px;}
+.option-card{ border-radius:24px; padding:30px; border:2px solid var(--border); position:relative; overflow:hidden;}
+.option-card.opt1{background:linear-gradient(160deg,#241540,#161F36);}
+.option-card.opt2{background:linear-gradient(160deg,#0E2C3B,#161F36);}
+.badge-tag{display:inline-block; font-size:12px; font-weight:700; padding:5px 12px; border-radius:999px; margin-bottom:14px;}
+.opt1 .badge-tag{background:rgba(124,58,237,.25); color:#C4B5FD;}
+.opt2 .badge-tag{background:rgba(56,189,248,.25); color:#7DD3FC;}
+.option-card h3{font-size:24px; margin-bottom:10px;}
+.option-card p{color:var(--text-dim); font-size:14px; margin-bottom:22px; max-width:380px;}
+
+/* ---------- SUBJECT GRID ---------- */
+.subjects-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px; padding-bottom:70px;}
+.subject-card{
+  background:var(--card); border:2px solid var(--border); border-radius:20px; padding:22px;
+  transition:.15s; cursor:pointer; text-align:left; color:var(--text);
+}
+.subject-card:hover{ background:var(--card-hover); transform:translateY(-3px); border-color:rgba(255,255,255,.22);}
+.subject-icon{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:21px;margin-bottom:14px;}
+.subject-card h3{font-size:17px; margin-bottom:4px; color:var(--text);}
+.subject-card .code{color:var(--text-faint); font-size:12px; margin-bottom:12px;}
+.subject-meta{display:flex; gap:8px; margin-bottom:14px; flex-wrap:wrap;}
+.meta-chip{font-size:11px; color:var(--text-dim); background:rgba(255,255,255,.06); padding:3px 9px; border-radius:999px;}
+.progress-row{display:flex; align-items:center; justify-content:space-between; font-size:12px; color:var(--text-dim); margin-bottom:6px;}
+
+/* ---------- TOPBAR (breadcrumb) ---------- */
+.topbar{display:flex; align-items:center; justify-content:space-between; padding:26px 0 8px; gap:14px; flex-wrap:wrap;}
+.crumb-btn{display:flex; align-items:center; gap:8px; background:var(--card); border:1.5px solid var(--border); border-radius:12px; padding:9px 15px; font-weight:600; font-size:14px; color:var(--text);}
+.crumb-btn:hover{background:var(--card-hover);}
+.page-title{font-size:26px; font-weight:800;}
+.page-sub{color:var(--text-dim); font-size:14px; margin-top:2px;}
+
+/* ---------- ADVENTURE: ARC ISLANDS ---------- */
+.island-belt{ display:flex; gap:0; align-items:center; overflow-x:auto; padding:44px 6px 60px; }
+.island-node{ display:flex; flex-direction:column; align-items:center; flex-shrink:0; width:168px; text-align:center;}
+.island-connector{width:52px; height:2px; background:repeating-linear-gradient(90deg,var(--border) 0 8px, transparent 8px 16px); flex-shrink:0; margin-top:-52px;}
+.island-circle{
+  width:104px; height:104px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:36px; border:3px solid; margin-bottom:14px; position:relative; transition:.15s;
+}
+.island-circle.unlocked{ background:radial-gradient(circle at 35% 30%, #8B5CF6, #5B21B6); border-color:var(--purple-glow); box-shadow:0 8px 0 var(--purple-shadow), 0 0 30px rgba(124,58,237,.35); cursor:pointer;}
+.island-circle.unlocked:hover{transform:translateY(-4px);}
+.island-circle.complete{ background:radial-gradient(circle at 35% 30%, #34D399, #047857); border-color:#34D399; box-shadow:0 8px 0 var(--emerald-shadow); cursor:pointer;}
+.island-circle.locked{ background:#1B2136; border-color:var(--border); box-shadow:0 8px 0 #0D111E; color:var(--text-faint); cursor:not-allowed;}
+.island-node h4{font-size:14px; margin-bottom:3px;}
+.island-node span{font-size:12px; color:var(--text-faint);}
+.island-node .arc-progress{font-size:11px; color:var(--emerald); font-weight:700; margin-top:4px;}
+
+/* ---------- ADVENTURE: LEVEL TRAIL ---------- */
+.trail-panel{ background:var(--card); border:2px solid var(--border); border-radius:24px; padding:34px 30px 44px; margin-bottom:60px;}
+.trail-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:30px;flex-wrap:wrap;gap:12px;}
+.trail-head h3{font-size:19px;}
+.trail-head .sub{color:var(--text-dim); font-size:13px;}
+.trail{display:flex; flex-direction:column; align-items:center; gap:0; position:relative;}
+.trail-item{display:flex; align-items:center; gap:22px; width:100%; max-width:460px; position:relative; padding:14px 0;}
+.trail-item:nth-child(even){flex-direction:row-reverse;}
+.trail-line{position:absolute; left:50%; top:-14px; width:2px; height:28px; background:repeating-linear-gradient(0deg,var(--border) 0 7px, transparent 7px 14px); transform:translateX(-50%);}
+.trail-item:first-child .trail-line{display:none;}
+.node-circle{
+  width:64px; height:64px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+  font-size:22px; font-weight:800; border:3px solid; flex-shrink:0; position:relative; z-index:2;
+}
+.node-circle.done{background:var(--emerald); border-color:#34D399; box-shadow:0 5px 0 var(--emerald-shadow); color:#04301f;}
+.node-circle.current{background:var(--purple); border-color:var(--purple-glow); box-shadow:0 5px 0 var(--purple-shadow), 0 0 0 8px rgba(124,58,237,.15); color:#fff; cursor:pointer;}
+.node-circle.locked{background:#1B2136; border-color:var(--border); color:var(--text-faint); box-shadow:0 5px 0 #0D111E;}
+.node-circle.boss{background:var(--crimson); border-color:#FCA5A5; box-shadow:0 5px 0 var(--crimson-shadow); color:#fff; cursor:pointer;}
+.trail-label{background:var(--bg2); border:1.5px solid var(--border); border-radius:14px; padding:11px 16px; flex:1;}
+.trail-label h5{font-size:14px; margin-bottom:2px;}
+.trail-label span{font-size:12px; color:var(--text-faint);}
+.trail-item.clickable .trail-label{cursor:pointer;}
+.trail-item.clickable .trail-label:hover{border-color:var(--purple-glow);}
+
+/* ---------- FOCUSED: UNIT BANNERS ---------- */
+.unit-list{display:flex; flex-direction:column; gap:14px; margin-bottom:56px;}
+.unit-banner{
+  display:flex; align-items:center; justify-content:space-between; gap:20px;
+  background:var(--card); border:2px solid var(--border); border-radius:20px; padding:22px 26px; cursor:pointer; transition:.15s;
+  color:var(--text); width:100%; text-align:left;
+}
+.unit-banner:hover{background:var(--card-hover); border-color:rgba(255,255,255,.22);}
+.unit-left{display:flex; align-items:center; gap:18px;}
+.unit-num{width:48px;height:48px;border-radius:14px;background:rgba(124,58,237,.18); color:#C4B5FD; display:flex;align-items:center;justify-content:center;font-weight:800;font-size:17px;flex-shrink:0;}
+.unit-banner h3{font-size:17px; margin-bottom:3px; color:var(--text);}
+.unit-banner .u-sub{font-size:13px; color:var(--text-dim);}
+.unit-right{display:flex; align-items:center; gap:14px; flex-shrink:0;}
+.lect-chip{font-size:12px; color:var(--text-faint); background:rgba(255,255,255,.05); padding:5px 12px; border-radius:999px; white-space:nowrap;}
+
+/* ---------- FOCUSED: BUBBLES ---------- */
+.bubble-grid{display:flex; flex-wrap:wrap; gap:14px; padding-bottom:60px;}
+.bubble{
+  background:var(--card); border:2px solid var(--border); border-radius:999px; padding:14px 22px;
+  display:flex; align-items:center; gap:10px; cursor:pointer; transition:.15s; font-weight:600; font-size:14px;
+}
+.bubble:hover{ transform:translateY(-3px); border-color:var(--purple-glow); background:var(--card-hover);}
+.bubble .tag{font-size:11px; padding:3px 9px; border-radius:999px; font-weight:700;}
+.tag.high{background:rgba(239,68,68,.18); color:#FCA5A5;}
+.tag.quick{background:rgba(245,158,11,.18); color:#FCD34D;}
+
+/* ---------- MODAL / DRAWER ---------- */
+.overlay{ position:fixed; inset:0; background:rgba(6,8,14,.72); backdrop-filter:blur(3px); z-index:100; display:flex; align-items:flex-end; justify-content:center;}
+.drawer{
+  width:100%; max-width:760px; max-height:88vh; overflow-y:auto;
+  background:var(--bg2); border:2px solid var(--border); border-bottom:none;
+  border-radius:26px 26px 0 0; padding:34px 34px 44px; box-shadow:0 -10px 40px rgba(0,0,0,.5);
+  animation:slideUp .25s ease;
+}
+@keyframes slideUp{ from{transform:translateY(60px); opacity:0;} to{transform:translateY(0); opacity:1;} }
+.drawer-head{display:flex; align-items:flex-start; justify-content:space-between; gap:14px; margin-bottom:6px;}
+.drawer-head h2{font-size:23px; max-width:560px;}
+.close-x{background:var(--card); border:1.5px solid var(--border); width:36px;height:36px;border-radius:50%; font-size:16px; color:var(--text-dim); flex-shrink:0;}
+.drawer-meta{display:flex; gap:10px; margin:12px 0 22px; flex-wrap:wrap;}
+.panel{margin-bottom:22px; background:var(--card); border:1.5px solid var(--border); border-radius:16px; padding:18px 20px;}
+.panel h4{display:flex; align-items:center; gap:8px; font-size:13px; text-transform:none; color:var(--purple-glow); margin-bottom:10px; font-weight:700;}
+.panel.trap h4{color:var(--crimson);}
+.panel.res h4{color:var(--cyan);}
+.panel p{font-size:14.5px; color:#E5E7EB; line-height:1.6;}
+.tech-content{ font-size:14.5px; color:#E5E7EB; line-height:1.75; }
+.tech-content p{ margin-bottom:12px; }
+.tech-content p:last-child{ margin-bottom:0; }
+.tech-content .formula-line{
+  display:block; background:#0B0F19; border:1px solid var(--border); border-left:3px solid var(--cyan);
+  border-radius:8px; padding:10px 13px; margin:8px 0; font-family:'Inter',sans-serif; font-size:13.5px;
+  color:#7DD3FC; font-weight:600; letter-spacing:.01em;
+}
+.res-links{display:flex; flex-direction:column; gap:8px; margin-top:6px;}
+.res-link{display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--bg2); border:1px solid var(--border); border-radius:10px; font-size:13.5px; text-decoration:none;}
+.res-link:hover{border-color:var(--cyan);}
+.res-link .rtype{font-size:11px; color:var(--text-faint);}
+.drawer-actions{display:flex; gap:12px; margin-top:8px;}
+
+/* ---------- FOOTER ---------- */
+.footer{border-top:1px solid var(--border); padding:34px 0 90px; text-align:center; color:var(--text-faint); font-size:13px;}
+
+.watermark{
+  position:fixed; bottom:18px; left:50%; transform:translateX(-50%);
+  z-index:999; display:flex; align-items:center; gap:7px;
+  background:rgba(22,31,54,0.92); backdrop-filter:blur(8px);
+  border:1.5px solid rgba(255,255,255,0.16); border-radius:999px;
+  padding:9px 18px; font-size:12.5px; font-weight:700; color:var(--text-dim);
+  box-shadow:0 6px 18px rgba(0,0,0,.4);
+  pointer-events:none; white-space:nowrap;
+}
+.watermark span.star{color:var(--amber);}
+@media(max-width:560px){
+  .watermark{ font-size:11px; padding:7px 14px; bottom:12px; }
+}
+
+@media(max-width:860px){
+  .hero-grid{grid-template-columns:1fr;}
+  .features{grid-template-columns:1fr 1fr;}
+  .options{grid-template-columns:1fr;}
+  .subjects-grid{grid-template-columns:1fr 1fr;}
+  .hero h1{font-size:36px;}
+  .trail-item, .trail-item:nth-child(even){flex-direction:row;}
+  .wrap{padding:0 18px;}
+}
+@media(max-width:560px){
+  .subjects-grid{grid-template-columns:1fr;}
+  .features{grid-template-columns:1fr;}
+  .nav-inner{flex-wrap:wrap; padding:12px 16px; gap:10px;}
+  .brand{font-size:17px;}
+  .brand-badge{width:30px;height:30px;font-size:15px;}
+  .nav-stats{width:100%; justify-content:space-between;}
+  .pill{font-size:12.5px; padding:5px 10px;}
+  .mode-toggle button{padding:7px 12px; font-size:12px;}
+
+  .hero{padding:32px 0 28px;}
+  .hero h1{font-size:28px;}
+  .hero p{font-size:15px;}
+  .hero-actions{flex-direction:column; align-items:stretch;}
+  .hero-actions .btn{width:100%;}
+  .hero-art{padding:18px; border-radius:20px;}
+  .floaty-badge{font-size:11px; padding:7px 10px;}
+  .fb1{right:6px;}
+  .fb2{left:6px;}
+
+  .section-title h2{font-size:22px;}
+  .option-card{padding:22px;}
+  .option-card h3{font-size:20px;}
+
+  .subject-card{padding:18px;}
+
+  .topbar{padding:18px 0 4px;}
+  .page-title{font-size:20px;}
+
+  .island-belt{padding:28px 4px 40px; gap:0;}
+  .island-node{width:120px;}
+  .island-circle{width:76px; height:76px; font-size:26px; margin-bottom:10px;}
+  .island-connector{width:26px; margin-top:-38px;}
+  .island-node h4{font-size:13px;}
+  .island-node span{font-size:11px;}
+
+  .trail-panel{padding:22px 16px 30px; border-radius:18px;}
+  .trail-item{gap:14px; max-width:100%;}
+  .node-circle{width:50px; height:50px; font-size:17px;}
+  .trail-label{padding:10px 12px;}
+  .trail-label h5{font-size:13px;}
+
+  .unit-banner{padding:16px; flex-wrap:wrap; gap:12px;}
+  .unit-num{width:40px; height:40px; font-size:15px;}
+  .unit-banner h3{font-size:15px;}
+
+  .bubble{padding:11px 16px; font-size:13px;}
+
+  .drawer{max-height:92vh; padding:24px 18px 30px; border-radius:20px 20px 0 0;}
+  .drawer-head h2{font-size:19px;}
+  .panel{padding:14px 15px;}
+  .drawer-actions{flex-direction:column;}
+  .drawer-actions .btn{width:100%;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand" onclick="goHome()"><div class="brand-badge">🎮</div>StudyQuest</div>
+    <div class="nav-stats">
+      <span class="pill xp">⭐ <span id="xpDisplay">0</span> XP</span>
+      <span class="pill streak">🔥 <span id="streakDisplay">0</span> day streak</span>
+      <div class="mode-toggle">
+        <button id="tglAdv" class="adventure" onclick="setMode('adventure')">Adventure</button>
+        <button id="tglFoc" class="focused" onclick="setMode('focused')">Focused</button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div id="app"></div>
+
+<div class="footer">StudyQuest made by Shivam to gamify studying because he was bored.</div>
+
+<div class="watermark"><span class="star">✦</span> Built by Shivam</div>
+
+<script>
+/* ========================= CURRICULUM DATA ========================= */
+const SUBJECTS = [
+{
+  code:"ICS 301", name:"Data Structures", credits:3, ltp:"3-0-0", icon:"💻", color:"purple",
+  units:[
+    {title:"Introduction & Arrays", lectures:9, topics:[
+      {title:"Algorithm Complexity & Asymptotic Notations", xp:25,
+        intuition:"Big-O measures how an algorithm's runtime or memory scales as input size n grows toward infinity, ignoring constant hardware differences. Big-Oh (O) is the upper bound / worst case, Big-Omega (Ω) is the lower bound / best case, and Big-Theta (Θ) is the tight bound / average case — think of them as a ceiling, a floor, and a snug sandwich around the true growth rate.",
+        technical:"Formal definition: f(n) = O(g(n)) if there exist positive constants c and n0 such that 0 ≤ f(n) ≤ c·g(n) for all n ≥ n0.\n\nExample: prove 3n² + 5n = O(n²)\n→ 3n² + 5n ≤ 4n² for all n ≥ 5, so c=4, n0=5.",
+        trap:"7–10 marks: 'Differentiate between Big-Oh, Big-Omega and Big-Theta with graphical representations' or 'Prove 3n²+5n = O(n²)'. Examiners want the formal definition WITH explicit values of c and n0 — sketching the growth-rate graph is what secures full marks.",
+        resources:[
+          {name:"Gate Smashers — Asymptotic Notations in Algorithms", url:"https://www.youtube.com/results?search_query=gate+smashers+asymptotic+notations"},
+          {name:"Abdul Bari — Algorithms: Big O, Omega, Theta", url:"https://www.youtube.com/results?search_query=abdul+bari+big+o+omega+theta"}
+        ]},
+      {title:"Arrays & Memory Address Calculation", xp:30,
+        intuition:"RAM is really just one long 1D line of memory. A 2D array has to be mathematically 'flattened' into that line, either row-by-row (Row Major Order) or column-by-column (Column Major Order), so every element gets one unique address.",
+        technical:"For A[L1..U1][L2..U2], base address B, element size W, columns N=(U2-L2+1), rows M=(U1-L1+1):\n\nRow Major: Address(A[i][j]) = B + W × [(i−L1)×N + (j−L2)]\nColumn Major: Address(A[i][j]) = B + W × [(j−L2)×M + (i−L1)]",
+        trap:"10 marks: derive the general address formula for arbitrary lower bounds and compute an exact address (e.g. A[5][30], B=2000, W=4). Common slip: forgetting that subtracting a negative lower bound ADDS to the offset (5 − (−10) = 15).",
+        resources:[{name:"Jenny's Lectures — Address Calculation in 2D & 3D Arrays", url:"https://www.youtube.com/results?search_query=jennys+lectures+address+calculation+in+2d+array"}]},
+      {title:"Sparse Matrices & Triplet Representation", xp:25,
+        intuition:"A sparse matrix is mostly zeros. Instead of wasting memory storing every zero, we store only the non-zero elements as (row, column, value) triples.",
+        technical:"3-tuple table: first row stores (totalRows, totalCols, nonZeroCount), followed by one row per non-zero entry.\nFast Transpose algorithm avoids the O(cols×terms) naive transpose by pre-computing where each column's elements will land, achieving O(cols+terms).",
+        trap:"7 marks: represent a given sparse matrix in triplet form and implement the Fast Transpose algorithm — examiners check the pre-count/index-setting step, not just the final table.",
+        resources:[{name:"Knowledge Gate — Sparse Matrix Representation", url:"https://www.youtube.com/results?search_query=knowledge+gate+sparse+matrix+representation"}]}
+    ]},
+    {title:"Searching, Sorting & Linked Lists", lectures:10, topics:[
+      {title:"Searching Algorithms (Linear, Binary, Index-Sequential)", xp:25,
+        intuition:"Linear search checks every element one by one — simple but slow. Binary search repeatedly halves a SORTED array, throwing away half the remaining elements each comparison.",
+        technical:"Binary search recurrence: T(n) = T(n/2) + c → T(n) = O(log n) by the Master Theorem.\nIndex-sequential search builds a small index table to jump close to the target before doing a short linear scan.",
+        trap:"7 marks: write recursive binary search and formally derive its O(log n) complexity from the recurrence relation — don't just state the answer, show the substitution.",
+        resources:[{name:"Abdul Bari — Binary Search Algorithm and Analysis", url:"https://www.youtube.com/results?search_query=abdul+bari+binary+search+algorithm"}]},
+      {title:"Sorting Algorithms (Bubble, Selection, Insertion, Quick, Merge, Radix)", xp:35,
+        intuition:"Comparison sorts (Quick, Merge) reorder elements by comparing pairs. Quick Sort picks a pivot and partitions around it; Merge Sort splits in half, sorts each half, then merges. Radix Sort skips comparisons entirely — it buckets numbers digit by digit.",
+        technical:"Quick Sort: best/avg O(n log n), worst O(n²) — degrades badly when the array is already sorted and the first/last element is always chosen as pivot.\nMerge Sort: always O(n log n), stable, needs O(n) extra space.\nRadix Sort: O(d·(n+k)) where d = number of digits, k = bucket range.",
+        trap:"10 marks: trace Quick Sort's partitioning step-by-step on a given array, AND explain precisely why it degrades to O(n²) on sorted input with a poor pivot choice.",
+        resources:[
+          {name:"VisuAlgo — Sorting Visualizer", url:"https://visualgo.net/en/sorting"},
+          {name:"Gate Smashers — Quick Sort Algorithm & Partitioning", url:"https://www.youtube.com/results?search_query=gate+smashers+quick+sort+algorithm"}
+        ]},
+      {title:"Singly, Doubly & Circular Linked Lists", xp:30,
+        intuition:"A linked list trades an array's fixed contiguous memory for flexible, scattered nodes connected by pointers — you pay a pointer's worth of memory per element but gain O(1) insert/delete once you're at the right spot.",
+        technical:"struct Node { int data; struct Node* next; };\nReversal: iterate with prev/curr/next pointers, O(n) time, O(1) space.\nFloyd's Cycle Detection (Tortoise & Hare): slow pointer moves 1 step, fast moves 2 — if they meet, there's a loop.",
+        trap:"10 marks: write complete C functions to insert/delete at an arbitrary position, reverse a list in O(n), and detect + remove a loop using Floyd's algorithm — examiners deduct marks for missing NULL-pointer edge cases.",
+        resources:[{name:"Neso Academy — Singly & Doubly Linked List", url:"https://www.youtube.com/results?search_query=neso+academy+linked+list"}]},
+      {title:"Polynomial Operations Using Linked Lists", xp:20,
+        intuition:"Each polynomial term becomes a node holding (coefficient, exponent, next) — adding two polynomials is really just a coordinated merge, adding coefficients wherever exponents match.",
+        technical:"AddPoly(p1, p2): walk both lists simultaneously; if exponents equal, sum coefficients into a new node; otherwise copy the smaller-exponent term and advance only that pointer.",
+        trap:"7 marks: full C algorithm for polynomial addition using linked lists — remember to handle leftover terms once one list is exhausted.",
+        resources:[{name:"Gate Smashers — Polynomial Representation using Linked List", url:"https://www.youtube.com/results?search_query=gate+smashers+polynomial+linked+list"}]},
+      {title:"Hashing & Collision Resolution Techniques", xp:30,
+        intuition:"A hash function maps a key to a table slot in O(1) — the catch is collisions, when two keys land on the same slot. Different strategies decide what happens next.",
+        technical:"Division method: h(k) = k mod m.\nOpen addressing: Linear Probing (h(k)+i), Quadratic Probing (h(k)+i²), Double Hashing (h1(k)+i·h2(k)).\nClosed addressing: Separate Chaining (linked list per bucket).",
+        trap:"10 marks numerical: insert a given key sequence into a table of size m=11 using linear probing AND double hashing, counting collisions for each — a very common AKTU question pattern.",
+        resources:[{name:"Gate Smashers — Hashing Techniques & Collision Resolution", url:"https://www.youtube.com/results?search_query=gate+smashers+hashing+collision+resolution"}]}
+    ]},
+    {title:"Stacks & Queues", lectures:8, topics:[
+      {title:"Stacks & Expression Conversions", xp:30,
+        intuition:"A stack is LIFO — last in, first out. It's the natural data structure for tracking nested structure, which is exactly why it converts infix expressions (with precedence & parentheses) into postfix/prefix.",
+        technical:"Core ops: push, pop, peek, isEmpty — all O(1).\nInfix→Postfix: scan left to right; push operators respecting precedence, pop to output when a higher/equal-precedence operator arrives or on ')'.",
+        trap:"10 marks: step-by-step tabular conversion of a long infix expression like A + (B*C − (D/E^F)*G)*H — examiners want every stack state at every step, not just the final answer.",
+        resources:[{name:"Jenny's Lectures — Infix to Postfix Conversion using Stack", url:"https://www.youtube.com/results?search_query=jennys+lectures+infix+to+postfix"}]},
+      {title:"Recursion, Activation Records & Tower of Hanoi", xp:25,
+        intuition:"Every recursive call pushes a fresh activation record (local variables, return address) onto the call stack. Tower of Hanoi is the classic example: to move n disks, first move n−1 disks out of the way, move the biggest disk, then move the n−1 disks back on top.",
+        technical:"T(n) = 2T(n−1) + 1 ⟹ T(n) = O(2ⁿ). Minimum moves for n disks = 2ⁿ − 1.",
+        trap:"7 marks: write recursive Tower of Hanoi code AND draw the full recursion tree for n=3 — missing the tree diagram is the #1 way students lose marks here.",
+        resources:[{name:"Abdul Bari — Tower of Hanoi Problem", url:"https://www.youtube.com/results?search_query=abdul+bari+tower+of+hanoi"}]},
+      {title:"Queues, Circular Queues & Priority Queues", xp:30,
+        intuition:"A queue is FIFO. A plain linear queue wastes memory once front moves forward (false overflow) — a Circular Queue fixes this by wrapping the rear pointer around using modulo arithmetic.",
+        technical:"rear = (rear + 1) % capacity.\nDeque: input-restricted (insert one end only) vs output-restricted (delete one end only) double-ended queues.",
+        trap:"10 marks: explain why a linear queue suffers false overflow, then write full C enqueue/dequeue functions for a circular queue handling BOTH the full and empty boundary conditions correctly.",
+        resources:[{name:"Gate Smashers — Circular Queue Implementation", url:"https://www.youtube.com/results?search_query=gate+smashers+circular+queue"}]}
+    ]},
+    {title:"Trees, Binary Search Trees & Heaps", lectures:10, topics:[
+      {title:"Binary Tree Fundamentals & Traversals", xp:30,
+        intuition:"A binary tree is a hierarchy where every node has at most two children. The three depth-first traversals differ only in WHEN you visit the root relative to the subtrees: In-order (Left-Root-Right), Pre-order (Root-Left-Right), Post-order (Left-Right-Root).",
+        technical:"Given In-order + Pre-order (or In-order + Post-order), you can reconstruct a UNIQUE binary tree: the first element of Pre-order is the root; find it in In-order to split into left/right subtrees, then recurse.",
+        trap:"10 marks: given In-order and Pre-order sequences, construct the unique original binary tree step by step — draw every intermediate split, not just the final tree.",
+        resources:[{name:"Gate Smashers — Construct Tree from Inorder and Preorder", url:"https://www.youtube.com/results?search_query=gate+smashers+construct+tree+inorder+preorder"}]},
+      {title:"Binary Search Trees (BST) & Operations", xp:30,
+        intuition:"A BST keeps every left-subtree value smaller and every right-subtree value larger than its root — this ordering makes search, insert and delete all O(log n) on a balanced tree.",
+        technical:"Deletion has 3 cases: (1) leaf node — remove directly, (2) one child — replace node with its child, (3) two children — replace with the In-order Successor (smallest in right subtree) or Predecessor (largest in left subtree).",
+        trap:"10 marks: build a BST from a numeric sequence step-by-step, then demonstrate deleting a two-children node using the in-order successor — a very frequent AKTU question.",
+        resources:[{name:"Abdul Bari — Binary Search Tree Deletion", url:"https://www.youtube.com/results?search_query=abdul+bari+binary+search+tree+deletion"}]},
+      {title:"Threaded Binary Trees & Huffman Coding", xp:25,
+        intuition:"Normal binary trees waste their NULL child pointers. Threaded trees repurpose those NULLs to point directly to the in-order predecessor/successor, enabling stack-free traversal. Huffman Coding builds optimal prefix-free codes by always merging the two least-frequent symbols first (a greedy strategy using a min-priority-queue).",
+        technical:"Huffman: repeatedly pop the two smallest-frequency nodes, merge into a new parent node (frequency = sum), push back, until one tree remains. Left edge = 0, right edge = 1.",
+        trap:"7 marks: construct a Huffman tree for given character frequencies and calculate exactly how many bits are saved versus fixed-length encoding.",
+        resources:[{name:"Knowledge Gate — Huffman Coding with Example", url:"https://www.youtube.com/results?search_query=knowledge+gate+huffman+coding"}]},
+      {title:"AVL Trees, B-Trees & Binary Heaps", xp:35,
+        intuition:"An AVL Tree is a BST that self-balances after every insertion so no subtree ever gets too lopsided (Balance Factor stays in {−1,0,+1}). A Binary Heap is a complete tree used for O(log n) priority extraction (Heap Sort). B-Trees generalize this to multi-way branching, ideal for databases.",
+        technical:"AVL rotations: LL (single right rotate), RR (single left rotate), LR (left-right double rotate), RL (right-left double rotate) — triggered whenever |balance factor| becomes 2.",
+        trap:"10 marks: insert a full sequence of numbers into an AVL tree, clearly labeling EVERY rotation type performed at each step — partial credit is lost for unlabeled rotations.",
+        resources:[
+          {name:"VisuAlgo — AVL Tree Visualizer", url:"https://visualgo.net/en/bst"},
+          {name:"Abdul Bari — AVL Tree Rotations", url:"https://www.youtube.com/results?search_query=abdul+bari+avl+tree+rotations"}
+        ]}
+    ]},
+    {title:"Graphs", lectures:8, topics:[
+      {title:"Graph Representations & Traversals (BFS & DFS)", xp:30,
+        intuition:"A graph is a set of nodes connected by edges. Adjacency Matrix is simple but O(V²) space; Adjacency List is memory-efficient at O(V+E). BFS explores level-by-level using a queue; DFS dives deep first using a stack (or recursion).",
+        technical:"BFS: O(V+E), uses a queue + visited array, gives shortest path in unweighted graphs.\nDFS: O(V+E), uses recursion/stack, useful for cycle detection and topological sort.",
+        trap:"7–10 marks: write BFS/DFS pseudocode AND trace it on a given graph, showing discovery order and the queue/stack state at every step.",
+        resources:[{name:"Abdul Bari — Graph Traversals: BFS and DFS", url:"https://www.youtube.com/results?search_query=abdul+bari+graph+traversal+bfs+dfs"}]},
+      {title:"Minimum Spanning Trees (Prim's & Kruskal's)", xp:35,
+        intuition:"A Minimum Spanning Tree connects all V vertices using exactly V−1 edges with the smallest possible total weight. Prim's grows the tree outward from one vertex (greedy on vertices); Kruskal's sorts ALL edges globally and greedily adds the cheapest one that doesn't form a cycle.",
+        technical:"Prim's: O(E log V) with a min-heap.\nKruskal's: sort edges O(E log E), then use Disjoint Set Union (Find/Union) to detect cycles in near-O(E α(V)) time.",
+        trap:"10 marks: trace BOTH Prim's and Kruskal's on the same 6–8 node weighted graph step by step — examiners compare whether you understand the difference between vertex-growing vs edge-sorting strategies.",
+        resources:[{name:"Abdul Bari — Kruskal's and Prim's Algorithms", url:"https://www.youtube.com/results?search_query=abdul+bari+kruskal+prim+algorithm"}]},
+      {title:"Shortest Path & Transitive Closure (Dijkstra & Warshall)", xp:35,
+        intuition:"Dijkstra's finds the shortest path from ONE source to all other vertices, greedily picking the closest unvisited vertex each round (works only with non-negative weights). Floyd-Warshall instead finds ALL-PAIRS shortest paths using dynamic programming, considering each vertex as a possible intermediate stop.",
+        technical:"Dijkstra: O((V+E) log V) with a priority queue.\nFloyd-Warshall: O(V³), dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j]) for every intermediate k.",
+        trap:"10 marks: find shortest paths from a given source using Dijkstra, presenting the answer as a step-by-step distance-update table — not just the final distances.",
+        resources:[{name:"Gate Smashers — Dijkstra's Algorithm with Example", url:"https://www.youtube.com/results?search_query=gate+smashers+dijkstra+algorithm"}]}
+    ]}
+  ]
+},
+{
+  code:"ICS 302", name:"Computer Organization & Architecture", credits:3, ltp:"3-0-0", icon:"🖥️", color:"cyan",
+  units:[
+    {title:"Data Representation & Computer Arithmetic", lectures:8, topics:[
+      {title:"Functional Units, Bus Architecture & Number Systems", xp:25,
+        intuition:"A computer is CPU (ALU + Control Unit) + Memory + I/O, all talking over a shared common bus split into Control, Address, and Data lines. Negative numbers are represented using 1's or 2's complement so subtraction can reuse the same adder hardware as addition.",
+        technical:"2's complement of a number = invert all bits, then add 1. This lets a CPU perform subtraction as A + (−B) using only an adder circuit.",
+        trap:"Exam favorite: explain why 2's complement is preferred over 1's complement (no separate 'end-around carry' step, and there's only one representation of zero).",
+        resources:[{name:"Neso Academy — Computer Organization & Architecture", url:"https://www.youtube.com/results?search_query=neso+academy+computer+organization+architecture"}]},
+      {title:"IEEE 754 Floating Point Representation", xp:30,
+        intuition:"Floating point numbers are stored as sign + exponent + mantissa, the same idea as scientific notation but in binary, with a bias added to the exponent so it's always stored as a positive number.",
+        technical:"Single precision (32-bit): 1 sign + 8 exponent (bias 127) + 23 mantissa bits.\nDouble precision (64-bit): 1 sign + 11 exponent (bias 1023) + 52 mantissa bits.",
+        trap:"7–10 marks: convert a decimal like −13.625 or +0.15625 into IEEE 754 single-precision format — show the binary conversion, normalization, AND the biased exponent calculation explicitly.",
+        resources:[{name:"Gate Smashers — IEEE 754 Floating Point Representation", url:"https://www.youtube.com/results?search_query=gate+smashers+ieee+754+floating+point"}]}
+    ]},
+    {title:"CPU & ALU Design", lectures:7, topics:[
+      {title:"Booth's Multiplication Algorithm", xp:35,
+        intuition:"Booth's algorithm speeds up signed multiplication by spotting runs of consecutive 1s in the multiplier and replacing many small additions with a single subtraction-then-addition pair at the run's boundaries.",
+        technical:"Registers A (accumulator), Q (multiplier), Q₋₁ (extra bit), and a step Count. Rule: 10→A=A−M; 01→A=A+M; 00 or 11→no arithmetic op; always arithmetic-right-shift A,Q,Q₋₁ together after each step.",
+        trap:"10 marks numerical: multiply signed numbers like +7×−5 or −9×−6, showing the full A,Q,Q₋₁,Count table at every single step — partial tables lose marks even with the right final answer.",
+        resources:[{name:"Gate Smashers — Booth's Algorithm for Multiplication", url:"https://www.youtube.com/results?search_query=gate+smashers+booths+algorithm"}]},
+      {title:"Addressing Modes & Instruction Formats", xp:30,
+        intuition:"Addressing modes are different ways an instruction can specify WHERE its operand actually lives — directly, indirectly through a pointer, in a register, or offset by an index.",
+        technical:"Immediate (value is in the instruction), Direct, Indirect (address of an address), Register, Register Indirect, Indexed (base + index register), Relative (PC + offset), Base Register.",
+        trap:"10 marks: given a memory map with PC, R1, XR register values, calculate the Effective Address (EA) and final operand for EACH addressing mode listed — a table-based answer scores best.",
+        resources:[{name:"Knowledge Gate — Addressing Modes with Examples", url:"https://www.youtube.com/results?search_query=knowledge+gate+addressing+modes"}]}
+    ]},
+    {title:"Control Unit, Pipelining & Parallelism", lectures:9, topics:[
+      {title:"Hardwired vs. Microprogrammed Control Unit", xp:30,
+        intuition:"A Hardwired control unit is built from fixed logic gates — very fast but rigid (used in RISC). A Microprogrammed control unit stores control signals as 'microinstructions' in a small control memory — slower but flexible and easy to redesign (used in CISC).",
+        technical:"Microprogramming styles: Horizontal (wide word, one bit per control signal, fast but memory-hungry) vs Vertical (encoded, needs a decoder, compact but slower).",
+        trap:"10 marks: draw block diagrams for both control unit types side-by-side with a comparison table — examiners specifically check for correctly labeled control memory / sequencer blocks.",
+        resources:[{name:"Gate Smashers — Hardwired vs Microprogrammed Control Unit", url:"https://www.youtube.com/results?search_query=gate+smashers+hardwired+microprogrammed+control+unit"}]},
+      {title:"Instruction Pipelining & Pipeline Hazards", xp:35,
+        intuition:"Pipelining overlaps the Fetch-Decode-Execute-Writeback stages of consecutive instructions like an assembly line, boosting throughput — but hazards (conflicts between overlapping instructions) can stall or corrupt the pipeline.",
+        technical:"Speedup formula: S = (n·k) / (k + n − 1) for a k-stage pipeline running n instructions.\nHazard types: Structural (shared resource conflict), Data (RAW/WAR/WAW), Control (branch decisions). RAW hazards are fixed with Operand Forwarding.",
+        trap:"10 marks: calculate speedup for a given k-stage, n-instruction pipeline AND explain how Operand Forwarding eliminates RAW data hazards specifically.",
+        resources:[{name:"Gate Smashers — Pipeline Hazards in COA", url:"https://www.youtube.com/results?search_query=gate+smashers+pipeline+hazards"}]},
+      {title:"Flynn's Classification & Multicore Processors", xp:20,
+        intuition:"Flynn's taxonomy classifies computer architectures by how many instruction and data streams they process simultaneously — from a single old-school CPU up to modern GPU-style massive parallelism.",
+        technical:"SISD (single core, one instruction at a time), SIMD (vector/GPU-style, one instruction on many data), MISD (rare, fault tolerance systems), MIMD (multicore, independent instructions on independent data).",
+        trap:"Short-answer favorite: classify a given real-world processor (e.g. a modern GPU, a multicore CPU) into the correct Flynn category with justification.",
+        resources:[{name:"Gate Smashers — Flynn's Classification", url:"https://www.youtube.com/results?search_query=gate+smashers+flynns+classification"}]}
+    ]},
+    {title:"Memory Organization", lectures:9, topics:[
+      {title:"Memory Hierarchy & Cache Mapping Techniques", xp:35,
+        intuition:"Memory forms a speed/cost pyramid: Registers → L1/L2/L3 Cache → Main Memory → Disk. Cache mapping decides WHERE a main-memory block can live inside the much smaller cache.",
+        technical:"Direct Mapping (each block maps to exactly one cache line via Tag/Line/Word split), Fully Associative (block can go anywhere, needs full tag comparison), K-Way Set Associative (a middle ground — block maps to one SET, can sit in any of K lines within it).",
+        trap:"10 marks numerical: given a 64MB main memory and 64KB cache with 4-way set associativity and 32-byte blocks, calculate the exact number of Tag, Set, and Word offset bits.",
+        resources:[{name:"Gate Smashers — Cache Mapping: Direct, Associative, Set Associative", url:"https://www.youtube.com/results?search_query=gate+smashers+cache+mapping"}]},
+      {title:"Cache Replacement Policies & Hit Ratio", xp:25,
+        intuition:"When a cache is full and a new block needs to be loaded, a replacement policy decides which old block gets evicted — FIFO evicts the oldest, LRU evicts the least-recently-used, LFU evicts the least-frequently-used.",
+        technical:"Average Memory Access Time: T_avg = h·T_c + (1−h)·T_m, where h = hit ratio, T_c = cache access time, T_m = main memory access time.",
+        trap:"7 marks numerical: calculate T_avg given h=95%, T_c=2ns, T_m=50ns — a very commonly repeated AKTU numerical.",
+        resources:[{name:"Gate Smashers — Cache Replacement Policies", url:"https://www.youtube.com/results?search_query=gate+smashers+cache+replacement+policy+lru+fifo"}]},
+      {title:"Virtual Memory & Disk Scheduling", xp:30,
+        intuition:"Virtual memory lets a program 'believe' it has more memory than physically exists, using Paging to map virtual pages to physical frames — a TLB caches recent translations to avoid slow page-table lookups. Disk scheduling algorithms decide the order in which pending disk I/O requests are served to minimize seek time.",
+        technical:"Page Fault: requested page isn't in physical memory, triggers a disk fetch.\nDisk scheduling: FCFS (simple, no optimization), SSTF (shortest seek time first), SCAN (elevator algorithm), C-SCAN (circular scan, more fair).",
+        trap:"Common question: trace SCAN or C-SCAN disk head movement for a given sequence of track requests and calculate total head movement.",
+        resources:[{name:"Gate Smashers — Virtual Memory and Paging", url:"https://www.youtube.com/results?search_query=gate+smashers+virtual+memory+paging"}]}
+    ]},
+    {title:"I/O Organization & Emerging Trends", lectures:7, topics:[
+      {title:"I/O Techniques & Interrupts", xp:20,
+        intuition:"Programmed I/O makes the CPU repeatedly 'poll' a device (wasteful). Interrupt-Driven I/O lets the device signal the CPU only when it's ready, freeing the CPU to do other work meanwhile. When multiple devices can interrupt, Daisy Chaining resolves priority by physical wiring order.",
+        technical:"Daisy chain: interrupt-acknowledge signal passes device to device; the first device (closest to CPU) that is requesting service claims the bus, giving it implicit highest priority.",
+        trap:"Compare & contrast question: draw the daisy-chain priority circuit and explain how it resolves simultaneous interrupt requests.",
+        resources:[{name:"Gate Smashers — Interrupts in COA", url:"https://www.youtube.com/results?search_query=gate+smashers+interrupts+in+computer+organization"}]},
+      {title:"Direct Memory Access (DMA)", xp:30,
+        intuition:"DMA lets an I/O device transfer data straight to/from RAM WITHOUT bothering the CPU for every byte — the CPU just sets up the transfer and the DMA controller handles the rest, freeing the CPU for other tasks.",
+        technical:"Burst Transfer mode: DMA controller takes the bus and transfers an entire block at once (fast but blocks CPU). Cycle Stealing: DMA takes the bus for just one cycle at a time, interleaved with CPU cycles (slower but CPU stays responsive).",
+        trap:"7–10 marks: draw and label the DMA controller block diagram and explain the full bus arbitration transfer sequence step by step.",
+        resources:[{name:"Gate Smashers — DMA Controller in COA", url:"https://www.youtube.com/results?search_query=gate+smashers+dma+controller"}]},
+      {title:"Emerging Trends: GPU Architecture & AI Accelerators", xp:20,
+        intuition:"A CPU has few, powerful cores optimized for low-latency sequential tasks. A GPU has thousands of small, simple cores optimized for throughput — perfect for the massively parallel matrix math behind graphics and AI. TPUs push this even further, specializing purely for tensor operations.",
+        technical:"CPU: latency-oriented, complex control logic, large cache. GPU: throughput-oriented, SIMD execution across thousands of ALUs, small per-core cache.",
+        trap:"Conceptual/short-answer: compare CPU vs GPU architecture philosophy and explain why GPUs are suited to AI workloads.",
+        resources:[{name:"Gate Smashers — CPU vs GPU Architecture", url:"https://www.youtube.com/results?search_query=gate+smashers+cpu+vs+gpu+architecture"}]}
+    ]}
+  ]
+},
+{
+  code:"ICS 303", name:"Digital Electronics", credits:3, ltp:"3-0-0", icon:"⚡", color:"amber",
+  units:[
+    {title:"Number Systems, Codes & Digital Arithmetic", lectures:8, topics:[
+      {title:"Number Systems, Codes & Arithmetic", xp:30,
+        intuition:"Digital circuits speak only binary, so every representation — octal, hex, error-detecting codes — is really just a convenient shorthand humans use for the same underlying bits. Gray Code changes only ONE bit between consecutive values, which prevents glitches in physical hardware like rotary encoders.",
+        technical:"1's complement subtraction needs an 'end-around carry' fix-up; 2's complement doesn't. Binary→Gray: keep MSB, then XOR each pair of adjacent bits. Hamming Code adds parity bits at power-of-2 positions to detect AND correct single-bit errors.",
+        trap:"10 marks: convert a number across binary/octal/hex, perform 1's/2's complement subtraction, and encode/decode a Hamming code example — all frequently combined into one long question.",
+        resources:[{name:"Neso Academy — Digital Electronics: Number Systems & Codes", url:"https://www.youtube.com/results?search_query=neso+academy+number+systems+and+codes"}]}
+    ]},
+    {title:"Logic Gates, Boolean Algebra & K-Map Minimization", lectures:9, topics:[
+      {title:"Logic Gates, Boolean Algebra & K-Map Minimization", xp:35,
+        intuition:"NAND and NOR are called 'universal gates' because either one alone can build every other logic gate — this is why real chips are built almost entirely from NAND gates. K-Maps give a visual shortcut to Boolean simplification by grouping adjacent 1s; Quine-McCluskey does the same thing algorithmically/tabularly for larger functions.",
+        technical:"De Morgan's: (AB)' = A' + B', (A+B)' = A'B'.\nK-Map grouping must be in powers of 2 (1,2,4,8...) and can wrap around edges. Quine-McCluskey groups minterms by number of 1s, then iteratively combines terms differing by exactly one bit.",
+        trap:"10 marks: minimize f(A,B,C,D) = Σm(0,1,2,5,7,8,9,10,13,15) using the tabular (Quine-McCluskey) method — examiners require showing every combination round, not just the final expression.",
+        resources:[{name:"Neso Academy — K-Map & Quine-McCluskey Method", url:"https://www.youtube.com/results?search_query=neso+academy+kmap+quine+mccluskey"}]}
+    ]},
+    {title:"Combinational Circuit Design", lectures:9, topics:[
+      {title:"Combinational Circuit Design", xp:35,
+        intuition:"Combinational circuits build complex logic from simple building blocks with no memory — output depends only on current inputs. Adders combine bits with carry logic; MUX/decoders route or select signals using control lines.",
+        technical:"Half Adder: Sum = A⊕B, Carry = AB.\nFull Adder: Sum = A⊕B⊕Cin, Carry = AB + BCin + ACin.\nLook-Ahead Carry: computes Generate (Gi=AiBi) and Propagate (Pi=Ai⊕Bi) signals in parallel to skip the ripple-carry delay.",
+        trap:"10 marks: design a Full Adder circuit from scratch, or implement a given Boolean function using a 4:1/8:1 MUX by mapping select lines correctly — a favorite AKTU numerical.",
+        resources:[{name:"Neso Academy — Combinational Circuits", url:"https://www.youtube.com/results?search_query=neso+academy+combinational+circuits"}]}
+    ]},
+    {title:"Flip-Flops, Registers & Counters", lectures:9, topics:[
+      {title:"Flip-Flops, Registers & Counters", xp:35,
+        intuition:"A flip-flop is the basic 1-bit memory element that digital sequential circuits are built from. JK flip-flops fix SR's 'invalid state' problem but introduce a new bug — the Race Around Condition — solved by using a Master-Slave configuration. Registers and counters are just flip-flops chained together in useful patterns.",
+        technical:"Race Around: happens when J=K=1 and the clock pulse is longer than the gate delay, causing the output to toggle uncontrollably. Master-Slave JK solves it by only updating the slave on the clock's falling edge.\nCounters: Asynchronous (ripple, each flip-flop clocked by the previous one's output — simple but slow) vs Synchronous (all flip-flops share one clock — faster, more complex).",
+        trap:"10 marks: design a synchronous 3-bit Up/Down counter using JK or T flip-flops — draw the full state table, excitation table, and resulting circuit.",
+        resources:[{name:"Neso Academy — Flip Flops & Counters", url:"https://www.youtube.com/results?search_query=neso+academy+flip+flops+and+counters"}]}
+    ]},
+    {title:"Logic Families & Programmable Devices", lectures:8, topics:[
+      {title:"Logic Families & Programmable Devices", xp:30,
+        intuition:"Different logic families (TTL, ECL, CMOS) trade off speed, power consumption, and noise immunity — CMOS won mainstream adoption for its extremely low power draw. Programmable Logic Devices let engineers 'program' custom Boolean logic into a chip instead of hardwiring individual gates.",
+        technical:"ECL is fastest but power-hungry; CMOS is lowest power (dominant today); TTL sits in between.\nPLA: both AND and OR arrays are programmable (most flexible). PAL: AND array programmable, OR array fixed (cheaper, faster to manufacture).",
+        trap:"Comparison question: contrast TTL/ECL/CMOS on Fan-in, Fan-out, Noise Margin, and Propagation Delay, and distinguish PLA vs PAL vs ROM by which arrays are fixed vs programmable.",
+        resources:[{name:"Gate Smashers — Logic Families & PLD: PLA vs PAL", url:"https://www.youtube.com/results?search_query=gate+smashers+pla+vs+pal"}]}
+    ]}
+  ]
+},
+{
+  code:"ICS 304", name:"Discrete Structures & Theory of Logic", credits:3, ltp:"3-0-0", icon:"∑", color:"emerald",
+  units:[
+    {title:"Sets, Relations & Functions", lectures:8, topics:[
+      {title:"Sets, Relations & Functions", xp:30,
+        intuition:"A relation is 'equivalence' if it groups elements into clean, non-overlapping buckets (Reflexive + Symmetric + Transitive). A Partial Order Relation (Poset) instead builds a hierarchy — some elements are comparable, some aren't. Warshall's Algorithm mechanically computes the transitive closure of any relation.",
+        technical:"Warshall's Algorithm: for k in vertices, for i in vertices, for j in vertices: if reachable(i,k) and reachable(k,j) then reachable(i,j) = true. Runs in O(V³).\nPigeonhole Principle: if n items are placed into m<n containers, at least one container holds ≥⌈n/m⌉ items.",
+        trap:"10 marks: prove a given relation is an equivalence relation by checking all three properties explicitly, or apply Warshall's algorithm to compute a transitive closure matrix step by step.",
+        resources:[{name:"Gate Smashers — Discrete Mathematics: Relations", url:"https://www.youtube.com/results?search_query=gate+smashers+relations+discrete+mathematics"}]}
+    ]},
+    {title:"Mathematical Logic & Inference Theory", lectures:8, topics:[
+      {title:"Mathematical Logic & Inference Theory", xp:30,
+        intuition:"Propositional logic works with statements that are definitively true or false; truth tables let you check a whole formula is ALWAYS true (tautology) or ALWAYS false (contradiction). Predicate logic extends this with quantifiers to reason about ALL or SOME elements of a domain.",
+        technical:"Normal forms: DNF (OR of AND terms), CNF (AND of OR terms), PDNF/PCNF (canonical, minterm/maxterm-based forms).\nRules of Inference: Modus Ponens (P, P→Q ⊢ Q), Modus Tollens (¬Q, P→Q ⊢ ¬P).",
+        trap:"10 marks: convert a given formula to PDNF/PCNF using a truth table, or construct a formal proof using rules of inference for a multi-step argument.",
+        resources:[{name:"Knowledge Gate — Propositional Logic & Rules of Inference", url:"https://www.youtube.com/results?search_query=knowledge+gate+propositional+logic+rules+of+inference"}]}
+    ]},
+    {title:"Lattices & Boolean Algebra", lectures:8, topics:[
+      {title:"Lattices & Boolean Algebra", xp:30,
+        intuition:"A Hasse Diagram visually simplifies a poset by removing redundant edges implied by transitivity. A Lattice is a poset where every pair of elements has both a unique Least Upper Bound (LUB / join) and Greatest Lower Bound (GLB / meet) — this structure underlies Boolean algebra itself.",
+        technical:"Lattice types: Bounded (has global max & min), Complemented (every element has a complement), Distributive (meet/join distribute over each other), Modular.\nA Boolean Algebra is exactly a complemented, distributive lattice.",
+        trap:"10 marks: draw the Hasse diagram for D₃₆ (divisors of 36 ordered by divisibility) and formally prove or disprove whether it forms a Boolean algebra.",
+        resources:[{name:"Gate Smashers — Hasse Diagram and Lattices", url:"https://www.youtube.com/results?search_query=gate+smashers+hasse+diagram+lattices"}]}
+    ]},
+    {title:"Algebraic Structures & Combinatorics", lectures:8, topics:[
+      {title:"Algebraic Structures & Combinatorics", xp:35,
+        intuition:"Algebraic structures form a hierarchy of increasing structure: a Semigroup just needs closure + associativity; a Monoid adds an identity element; a Group additionally requires every element to have an inverse. Lagrange's Theorem then reveals a beautiful constraint on how subgroups can 'fit inside' a finite group.",
+        technical:"Lagrange's Theorem: the order (size) of any subgroup H of a finite group G must divide the order of G.\nCyclic Group: generated by repeatedly applying one element. Coset: a shifted copy of a subgroup.",
+        trap:"10 marks: state and formally prove Lagrange's Theorem for finite groups — the standard proof uses cosets partitioning the group into equal-size, disjoint sets.",
+        resources:[{name:"Gate Smashers — Group Theory & Lagrange's Theorem", url:"https://www.youtube.com/results?search_query=gate+smashers+group+theory+lagranges+theorem"}]}
+    ]},
+    {title:"Graph Theory", lectures:8, topics:[
+      {title:"Graph Theory", xp:35,
+        intuition:"Graph theory formalizes networks of connected objects. The Handshaking Lemma is a simple but powerful counting fact; Eulerian graphs are about tracing every EDGE exactly once, while Hamiltonian graphs are about visiting every VERTEX exactly once — subtly different problems with very different difficulty.",
+        technical:"Handshaking Lemma: Σ deg(v) = 2|E| for any graph.\nEuler's Theorem: a connected graph has an Eulerian circuit iff every vertex has even degree.\nEuler's Formula for planar graphs: V − E + R = 2 (R = number of regions including the outer one).",
+        trap:"10 marks: determine whether a given graph is Eulerian/Hamiltonian and justify with the relevant theorem, or verify Euler's planar formula on a drawn graph.",
+        resources:[{name:"Gate Smashers — Graph Theory Full Playlist", url:"https://www.youtube.com/results?search_query=gate+smashers+graph+theory"}]}
+    ]}
+  ]
+},
+{
+  code:"IHV 301", name:"Universal Human Values & Ethics", credits:2, ltp:"2-0-0", icon:"🌱", color:"rose",
+  units:[
+    {title:"Need & Guidelines for Value Education", lectures:6, topics:[
+      {title:"Self-Exploration & Natural Acceptance", xp:20,
+        intuition:"UHV begins by asking students to genuinely self-reflect rather than accept values on authority — the course argues that when you verify a value against your own natural acceptance and experience, it becomes truly yours rather than an imposed rule.",
+        technical:"Core distinction: value education via 'imposition' (told what's right) vs 'exploration' (verified through one's own natural acceptance and reasoning) — the latter is UHV's foundational method.",
+        trap:"Frequently asked to define 'Continuous Happiness and Prosperity' as the two universal human aspirations that self-exploration should verify against.",
+        resources:[{name:"Gate Smashers — Universal Human Values Playlist", url:"https://www.youtube.com/results?search_query=gate+smashers+universal+human+values"}]}
+    ]},
+    {title:"Harmony in the Human Being", lectors:6, lectures:6, topics:[
+      {title:"Harmony of Self ('I') and Body", xp:20,
+        intuition:"UHV distinguishes the conscious 'I' (self) from the physical body it inhabits — 'Sukh' (happiness, a state of the self) is different from 'Suvidha' (physical facility/comfort, a state of the body), and confusing the two is presented as a root cause of dissatisfaction.",
+        technical:"Sanyam (self-regulation) and Swasthya (health) are framed as the body's proper role serving the self, rather than the self being enslaved to bodily desires.",
+        trap:"Common short-answer: differentiate Sukh vs Suvidha with everyday examples.",
+        resources:[{name:"AKTU Official UHV Channel", url:"https://www.youtube.com/results?search_query=aktu+universal+human+values+lecture"}]}
+    ]},
+    {title:"Harmony in Family & Society", lectures:6, topics:[
+      {title:"Values in Human-Human Relationships", xp:20,
+        intuition:"Healthy relationships are built on two core values — Trust (Vishwas, the belief that the other person wants my good) and Respect (Samman, the acknowledgment of the other as being like myself, just as important). The course extends this from family outward to an 'Undivided Society' (Akhand Samaj).",
+        technical:"Nine core relationship values UHV covers: trust, respect, affection, care, guidance, reverence, glory, gratitude, love — with Trust and Respect emphasized as foundational.",
+        trap:"Common question: explain Trust and Respect as the foundational values of relationship and how they scale from family to society.",
+        resources:[{name:"Gate Smashers — Universal Human Values Playlist", url:"https://www.youtube.com/results?search_query=gate+smashers+universal+human+values"}]}
+    ]},
+    {title:"Harmony in Nature & Existence", lectures:6, topics:[
+      {title:"The Four Orders of Nature", xp:20,
+        intuition:"UHV frames existence as four interconnected 'orders': Physical (matter, no self-organization), Plant/Pranic (self-organizing, but no consciousness), Animal (consciousness, but instinct-driven), and Human (consciousness + reasoning). Each higher order depends on and should exist in mutual fulfillment (Sah-astitva) with the ones below it.",
+        technical:"Recyclability: physical order material cycles back into nature without harm — sustainability is framed as respecting this same principle of mutual fulfillment.",
+        trap:"Common question: list and explain the four orders of nature with one example each, and define Sah-astitva (co-existence).",
+        resources:[{name:"Gate Smashers — Universal Human Values Playlist", url:"https://www.youtube.com/results?search_query=gate+smashers+universal+human+values"}]}
+    ]},
+    {title:"Professional Ethics & Universal Human Order", lectures:6, topics:[
+      {title:"Eco-Friendly Production & Professional Conduct", xp:20,
+        intuition:"The final unit applies all prior harmony principles to professional life — engineers are asked to design production systems and technologies that don't just optimize for profit but remain in harmony with nature (eco-friendly) and society.",
+        technical:"Transition strategy: moving from a purely profit/competition-driven model toward one grounded in universal human values, without abandoning technical/economic competence.",
+        trap:"Common question: describe how a graduate engineer can apply UHV principles to professional and technological choices.",
+        resources:[{name:"AKTU Official UHV Channel", url:"https://www.youtube.com/results?search_query=aktu+universal+human+values+lecture"}]}
+    ]}
+  ]
+},
+{
+  code:"IAE 301", name:"Verbal Ability & Professional Communication", credits:2, ltp:"2-0-0", icon:"🗣️", color:"blue",
+  units:[
+    {title:"Grammar & Verbal Ability", lectures:6, topics:[
+      {title:"Subject-Verb Agreement, Error Spotting & Para-jumbles", xp:20,
+        intuition:"Most grammar traps come down to a small set of recurring rules — subject-verb agreement is often broken by a long phrase sitting between subject and verb, and para-jumbles are solved by finding chronological order plus pronoun/connector cues linking sentences together.",
+        technical:"Error-spotting strategy: check subject-verb agreement, tense consistency, and modifier placement first — these cover the majority of AKTU error-spotting questions.\nPara-jumble strategy: find the sentence that introduces the topic (no pronouns referring backward), then chain sentences using pronoun/connector matches.",
+        trap:"Practice pattern: spot-the-error and para-jumble questions appear almost every semester — timing yourself on 10 at a time builds real exam speed.",
+        resources:[{name:"Oxford Professional English Practice", url:"https://www.youtube.com/results?search_query=oxford+professional+english+practice+grammar"}]}
+    ]},
+    {title:"Effective Communication & Vocabulary", lectures:6, topics:[
+      {title:"5W+1H, Barriers to Communication & Reading Comprehension", xp:20,
+        intuition:"Effective communication checks against the 5W+1H frame (Who, What, When, Where, Why, How) to make sure a message is complete. Barriers — noise, language gaps, wrong tone/pitch, emotional filters — are what break messages down between sender and receiver.",
+        technical:"Common communication barriers: physical (noise), semantic (word choice/jargon), psychological (bias, stereotyping), organizational (unclear hierarchy).",
+        trap:"Common question: identify and classify barriers to communication in a given workplace scenario.",
+        resources:[{name:"CrashCourse — Study Skills & Communication", url:"https://www.youtube.com/results?search_query=crashcourse+communication+skills"}]}
+    ]},
+    {title:"Presentation, GD & Interview Skills", lectures:6, topics:[
+      {title:"Group Discussions, Active Listening & Critical Reasoning", xp:20,
+        intuition:"A Group Discussion evaluates how you contribute to a shared conversation, not just your knowledge — active listening (genuinely tracking what others say before replying) and structured critical reasoning are what separates strong GD performers from those who just talk the most.",
+        technical:"GD scoring criteria typically include: content knowledge, communication clarity, leadership/initiative, and listening/team behavior.",
+        trap:"Practical evaluation: mock GD and interview rounds are commonly assessed on structure (intro-body-conclusion) rather than raw content volume.",
+        resources:[{name:"CrashCourse — Study Skills", url:"https://www.youtube.com/results?search_query=crashcourse+study+skills+communication"}]}
+    ]},
+    {title:"Professional Writing", lectures:6, topics:[
+      {title:"Precis Writing & Technical Email Structure", xp:20,
+        intuition:"A technical email follows a strict, scannable structure — a clear action-oriented subject line, brief greeting, 2–3 sentences of context, bulleted action items, and a professional sign-off. Precis writing tests the opposite skill: compressing a long passage to one-third its length in indirect speech, without adding personal opinion.",
+        technical:"Technical Email skeleton: Subject line (clear + actionable) → Salutation → 2-3 sentence context/purpose → Bulleted action items → Sign-off.\nPrecis rule: strictly indirect/reported speech, roughly ⅓ of original word count, core arguments preserved, no personal commentary.",
+        trap:"Common exam task: write a precis of a given passage in exactly one-third the word count, or draft a professional email/report for a given workplace scenario.",
+        resources:[{name:"Oxford Professional English Practice", url:"https://www.youtube.com/results?search_query=oxford+professional+english+practice+precis+writing"}]}
+    ]},
+    {title:"Literature Summaries & Modern Profile", lectures:6, topics:[
+      {title:"Literature Themes & Professional Profile Building", xp:20,
+        intuition:"This unit pairs classic literature analysis (themes of Pride and Prejudice, Hard Times, and The Old Man and the Sea) with a very modern professional skill: building an effective LinkedIn profile that communicates your value clearly to recruiters.",
+        technical:"LinkedIn optimization checklist: clear headline (role + value, not just job title), quantified achievements in experience bullets, a focused 'About' summary, and relevant skill endorsements.",
+        trap:"Common question: discuss the central theme or moral conflict of one of the prescribed texts, or critique/build a sample professional profile.",
+        resources:[{name:"CrashCourse Literature", url:"https://www.youtube.com/results?search_query=crashcourse+literature"}]}
+    ]}
+  ]
+}
+];
+
+/* ========================= STATE ========================= */
+const state = {
+  mode: 'adventure',      // 'adventure' | 'focused'
+  view: 'home',           // home | subjects | arcs | trail | units | bubbles
+  subjectIdx: null,
+  arcIdx: null,
+  unitIdx: null,
+  xp: 0,
+  streak: 0,
+  completed: new Set()  // subjectIdx-unitIdx-topicIdx
+};
+
+function tkey(s,u,t){ return s+'-'+u+'-'+t; }
+
+function isTopicUnlocked(s,u,t){
+  // All levels are unlocked from the start — a student can jump straight to
+  // whichever topic they're weak on instead of being blocked by earlier ones.
+  return true;
+}
+function isUnitUnlocked(s,u){
+  // All arcs/units are unlocked from the start, same reasoning as above.
+  return true;
+}
+function unitProgress(s,u){
+  const unit = SUBJECTS[s].units[u];
+  let done=0; unit.topics.forEach((t,i)=>{ if(state.completed.has(tkey(s,u,i))) done++; });
+  return {done, total:unit.topics.length};
+}
+function subjectProgress(s){
+  let done=0, total=0;
+  SUBJECTS[s].units.forEach((unit,u)=>{ unit.topics.forEach((t,i)=>{ total++; if(state.completed.has(tkey(s,u,i))) done++; }); });
+  return {done,total};
+}
+
+/* ========================= NAV HELPERS ========================= */
+function setMode(m){ state.mode=m; state.view = state.view==='home' ? 'home' : 'subjects'; render(); }
+function goHome(){ state.view='home'; render(); }
+function openSubjects(m){ state.mode=m; state.view='subjects'; render(); }
+function openSubject(i){
+  state.subjectIdx=i;
+  state.view = state.mode==='adventure' ? 'arcs' : 'units';
+  render();
+}
+function openArc(i){ if(!isUnitUnlocked(state.subjectIdx,i)) return; state.arcIdx=i; state.view='trail'; render(); }
+function openUnit(i){ state.unitIdx=i; state.view='bubbles'; render(); }
+function backTo(view){ state.view=view; render(); }
+
+let activeTopicRef = null;
+function openTopic(s,u,t,locked){
+  if(locked) return;
+  activeTopicRef = {s,u,t};
+  renderDrawer();
+}
+function closeDrawer(){
+  const ov = document.getElementById('drawerOverlay');
+  if(ov) ov.remove();
+}
+function completeTopic(){
+  const {s,u,t} = activeTopicRef;
+  const key = tkey(s,u,t);
+  if(!state.completed.has(key)){
+    state.completed.add(key);
+    const topic = SUBJECTS[s].units[u].topics[t];
+    state.xp += topic.xp;
+    state.streak += 0;
+  }
+  closeDrawer();
+  render();
+}
+
+/* ========================= RENDER ========================= */
+function updateHeader(){
+  document.getElementById('xpDisplay').textContent = state.xp;
+  document.getElementById('streakDisplay').textContent = state.streak;
+  document.getElementById('tglAdv').classList.toggle('active', state.mode==='adventure');
+  document.getElementById('tglFoc').classList.toggle('active', state.mode==='focused');
+}
+
+function render(){
+  updateHeader();
+  const app = document.getElementById('app');
+  if(state.view==='home') app.innerHTML = renderHome();
+  else if(state.view==='subjects') app.innerHTML = renderSubjects();
+  else if(state.view==='arcs') app.innerHTML = renderArcs();
+  else if(state.view==='trail') app.innerHTML = renderTrail();
+  else if(state.view==='units') app.innerHTML = renderUnits();
+  else if(state.view==='bubbles') app.innerHTML = renderBubbles();
+  window.scrollTo({top:0, behavior:'instant'});
+}
+
+function renderHome(){
+  return `
+  <div class="wrap">
+    <section class="hero">
+      <div class="hero-grid">
+        <div>
+          <div class="eyebrow">LEARN · PLAY · GROW</div>
+          <h1>Turn Your Syllabus Into an <span class="grad">Adventure</span></h1>
+          <p>Gamified learning with levels, rewards and real progress, built around your exact AKTU B.Tech syllabus. Make every topic feel like a win.</p>
+          <div class="hero-actions">
+            <button class="btn btn-purple" onclick="openSubjects('adventure')">Start Your Journey →</button>
+            <button class="btn btn-outline" onclick="openSubjects('focused')">▶ Try Focused Mode</button>
+          </div>
+          <div class="social-row">
+            <div class="avatars"><span>👨‍🎓</span><span>👩‍🎓</span><span>🧑‍🎓</span><span>👨‍💻</span></div>
+            <span>Join fellow AKTU students making study fun again.</span>
+          </div>
+        </div>
+        <div class="hero-art">
+          <div class="screen">
+            <div class="lvl">LEVEL UP YOUR KNOWLEDGE</div>
+            <div style="font-size:13px;color:var(--text-dim)">Data Structures · Arc 1</div>
+            <div class="bar-track"><div class="bar-fill" style="width:60%"></div></div>
+            <div class="caption">3 of 5 levels complete — keep the streak alive 🔥</div>
+          </div>
+          <div class="floaty-badge fb1">⭐ +120 XP</div>
+          <div class="floaty-badge fb2">🔥 7 day streak</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="features">
+      <div class="feature"><div class="ico" style="background:rgba(124,58,237,.18);">🎮</div><div><h4>Gamified Learning</h4><p>Topics become levels, units become arcs, subjects become worlds.</p></div></div>
+      <div class="feature"><div class="ico" style="background:rgba(16,185,129,.18);">📈</div><div><h4>Real Progress</h4><p>Track XP, streaks, and exactly how far you've come.</p></div></div>
+      <div class="feature"><div class="ico" style="background:rgba(245,158,11,.18);">🏆</div><div><h4>AKTU Exam Traps</h4><p>Every topic flags the exact question patterns examiners repeat.</p></div></div>
+      <div class="feature"><div class="ico" style="background:rgba(56,189,248,.18);">🎥</div><div><h4>Curated Videos</h4><p>Hand-picked explainers from Gate Smashers, Abdul Bari & more.</p></div></div>
+    </section>
+
+    <div class="section-title">
+      <h2>Two Ways to Learn, One Amazing Experience</h2>
+      <p>Pick the style that fits your mood — or switch anytime with the toggle above.</p>
+    </div>
+    <section class="options">
+      <div class="option-card opt1">
+        <span class="badge-tag">Option 1</span>
+        <h3>Gamified Adventure</h3>
+        <p>Each subject is a world. Each unit is an arc of floating islands, and topics are levels along a winding trail. Clear a level to unlock the next — clear every level to unlock the next arc.</p>
+        <button class="btn btn-purple" onclick="openSubjects('adventure')">Explore Adventure →</button>
+      </div>
+      <div class="option-card opt2">
+        <span class="badge-tag">Option 2</span>
+        <h3>Focused Learning</h3>
+        <p>Prefer a simpler path? Browse every subject's units as chunky banners, tap a unit to see all its topics as bubbles, and open any bubble for a fast, complete cheat-sheet.</p>
+        <button class="btn btn-cyan" onclick="openSubjects('focused')">Explore Linear Mode →</button>
+      </div>
+    </section>
+
+    <div class="section-title">
+      <h2>AKTU B.Tech · 2nd Year · Semester III</h2>
+      <p>Six full subjects, mapped topic-by-topic. More years and branches coming soon.</p>
+    </div>
+    ${renderSubjectGrid()}
+  </div>`;
+}
+
+function colorVar(c){
+  return {purple:'var(--purple)',cyan:'var(--cyan)',amber:'var(--amber)',emerald:'var(--emerald)',rose:'#F472B6',blue:'#60A5FA'}[c] || 'var(--purple)';
+}
+function colorBg(c){
+  return {purple:'rgba(124,58,237,.18)',cyan:'rgba(56,189,248,.18)',amber:'rgba(245,158,11,.18)',emerald:'rgba(16,185,129,.18)',rose:'rgba(244,114,182,.18)',blue:'rgba(96,165,250,.18)'}[c] || 'rgba(124,58,237,.18)';
+}
+
+function renderSubjectGrid(){
+  return `<div class="subjects-grid">
+    ${SUBJECTS.map((s,i)=>{
+      const p = subjectProgress(i);
+      const pct = Math.round((p.done/p.total)*100);
+      return `<button class="subject-card" onclick="setMode('${state.mode}'); openSubject(${i})">
+        <div class="subject-icon" style="background:${colorBg(s.color)};">${s.icon}</div>
+        <h3>${s.name}</h3>
+        <div class="code">${s.code}</div>
+        <div class="subject-meta">
+          <span class="meta-chip">${s.credits} Credits</span>
+          <span class="meta-chip">LTP ${s.ltp}</span>
+          <span class="meta-chip">${s.units.length} Units</span>
+        </div>
+        <div class="progress-row"><span>${p.done}/${p.total} Topics</span><span>${pct}%</span></div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:${colorVar(s.color)};"></div></div>
+      </button>`;
+    }).join('')}
+  </div>`;
+}
+
+function renderSubjects(){
+  return `<div class="wrap">
+    <div class="topbar">
+      <button class="crumb-btn" onclick="goHome()">← Home</button>
+      <div>
+        <div class="page-title">${state.mode==='adventure' ? 'Choose a World to Begin Your Adventure' : 'Choose a Subject for Focused Learning'}</div>
+        <div class="page-sub">${state.mode==='adventure' ? 'Every subject is a world of floating island arcs.' : 'Every subject expands into units, then topic bubbles.'}</div>
+      </div>
+      <div></div>
+    </div>
+    ${renderSubjectGrid()}
+  </div>`;
+}
+
+function renderArcs(){
+  const s = SUBJECTS[state.subjectIdx];
+  return `<div class="wrap">
+    <div class="topbar">
+      <button class="crumb-btn" onclick="backTo('subjects')">← Subjects</button>
+      <div>
+        <div class="page-title">${s.icon} ${s.name}</div>
+        <div class="page-sub">${s.code} · Choose an arc (unit) to begin your journey!</div>
+      </div>
+      <div></div>
+    </div>
+    <div class="island-belt">
+      ${s.units.map((unit,u)=>{
+        const unlocked = isUnitUnlocked(state.subjectIdx,u);
+        const prog = unitProgress(state.subjectIdx,u);
+        const complete = prog.done===prog.total;
+        const cls = complete ? 'complete' : (unlocked ? 'unlocked' : 'locked');
+        const icon = complete ? '🏆' : (unlocked ? '🏝️' : '🔒');
+        return `${u>0 ? '<div class="island-connector"></div>' : ''}
+        <div class="island-node">
+          <div class="island-circle ${cls}" onclick="openArc(${u})">${icon}</div>
+          <h4>Arc ${u+1}</h4>
+          <span>${unit.title}</span>
+          <span class="arc-progress">${unlocked ? prog.done+'/'+prog.total+' levels' : 'Locked'}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function renderTrail(){
+  const s = SUBJECTS[state.subjectIdx];
+  const unit = s.units[state.arcIdx];
+  const prog = unitProgress(state.subjectIdx, state.arcIdx);
+  return `<div class="wrap">
+    <div class="topbar">
+      <button class="crumb-btn" onclick="backTo('arcs')">← ${s.name}</button>
+      <div>
+        <div class="page-title">Arc ${state.arcIdx+1}: ${unit.title}</div>
+        <div class="page-sub">${unit.lectures} proposed lectures · ${prog.done}/${prog.total} levels complete</div>
+      </div>
+      <div></div>
+    </div>
+    <div class="trail-panel">
+      <div class="trail-head">
+        <h3>Level Trail</h3>
+        <span class="sub">Clear each level in order to unlock the next</span>
+      </div>
+      <div class="trail">
+        ${unit.topics.map((topic,t)=>{
+          const key = tkey(state.subjectIdx, state.arcIdx, t);
+          const done = state.completed.has(key);
+          const unlocked = isTopicUnlocked(state.subjectIdx, state.arcIdx, t);
+          const cls = done ? 'done' : (unlocked ? 'current' : 'locked');
+          const icon = done ? '✓' : (unlocked ? '▶' : '🔒');
+          const clickable = unlocked;
+          return `<div class="trail-item ${clickable?'clickable':''}">
+            <div class="trail-line"></div>
+            <div class="node-circle ${cls}" ${clickable?`onclick="openTopic(${state.subjectIdx},${state.arcIdx},${t},false)"`:''}>${icon}</div>
+            <div class="trail-label" ${clickable?`onclick="openTopic(${state.subjectIdx},${state.arcIdx},${t},false)"`:''}>
+              <h5>Level ${t+1} · ${topic.title}</h5>
+              <span>${done ? 'Completed · +'+topic.xp+' XP earned' : (unlocked ? '+'+topic.xp+' XP · Tap to start' : 'Locked')}</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderUnits(){
+  const s = SUBJECTS[state.subjectIdx];
+  return `<div class="wrap">
+    <div class="topbar">
+      <button class="crumb-btn" onclick="backTo('subjects')">← Subjects</button>
+      <div>
+        <div class="page-title">${s.icon} ${s.name}</div>
+        <div class="page-sub">${s.code} · ${s.credits} Credits · LTP ${s.ltp} — tap a unit to reveal its topic bubbles</div>
+      </div>
+      <div></div>
+    </div>
+    <div class="unit-list">
+      ${s.units.map((unit,u)=>{
+        return `<div class="unit-banner" onclick="openUnit(${u})">
+          <div class="unit-left">
+            <div class="unit-num">${u+1}</div>
+            <div>
+              <h3>Unit ${['I','II','III','IV','V'][u]}: ${unit.title}</h3>
+              <div class="u-sub">${unit.topics.length} topics</div>
+            </div>
+          </div>
+          <div class="unit-right">
+            <span class="lect-chip">${unit.lectures} Lectures</span>
+            <span style="color:var(--text-faint);">→</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function renderBubbles(){
+  const s = SUBJECTS[state.subjectIdx];
+  const unit = s.units[state.unitIdx];
+  return `<div class="wrap">
+    <div class="topbar">
+      <button class="crumb-btn" onclick="backTo('units')">← ${s.name}</button>
+      <div>
+        <div class="page-title">Unit: ${unit.title}</div>
+        <div class="page-sub">Tap any bubble for a full cheat-sheet with intuition, formulas, exam traps and videos</div>
+      </div>
+      <div></div>
+    </div>
+    <div class="bubble-grid">
+      ${unit.topics.map((topic,t)=>{
+        const high = topic.xp>=30;
+        return `<div class="bubble" onclick="openTopic(${state.subjectIdx},${state.unitIdx},${t},false)">
+          ${topic.title}
+          <span class="tag ${high?'high':'quick'}">${high?'🔥 High Yield':'⚡ Quick'}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function escapeHtml(str){
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function formatTechnical(text){
+  const blocks = text.split('\n\n');
+  return blocks.map(block=>{
+    const lines = block.split('\n').map(l=>l.trim()).filter(Boolean);
+    return lines.map(line=>{
+      const isFormula = /[=≤≥⟹⊕]/.test(line) || /^(O\(|T\(|Address|Sum|Carry|rear|h\(k\)|dist\[)/.test(line);
+      return isFormula
+        ? `<span class="formula-line">${escapeHtml(line)}</span>`
+        : `<p>${escapeHtml(line)}</p>`;
+    }).join('');
+  }).join('');
+}
+function renderDrawer(){
+  const {s,u,t} = activeTopicRef;
+  const subj = SUBJECTS[s];
+  const unit = subj.units[u];
+  const topic = unit.topics[t];
+  const key = tkey(s,u,t);
+  const done = state.completed.has(key);
+  const html = `
+  <div class="overlay" id="drawerOverlay" onclick="if(event.target===this) closeDrawer()">
+    <div class="drawer">
+      <div class="drawer-head">
+        <h2>${topic.title}</h2>
+        <button class="close-x" onclick="closeDrawer()">✕</button>
+      </div>
+      <div class="drawer-meta">
+        <span class="pill" style="color:${colorVar(subj.color)}">${subj.name}</span>
+        <span class="pill">${unit.title}</span>
+        <span class="pill xp">⭐ ${topic.xp} XP</span>
+      </div>
+
+      <div class="panel">
+        <h4>⏱ 60-Second Intuition</h4>
+        <p>${topic.intuition}</p>
+      </div>
+
+      <div class="panel">
+        <h4>🧩 Technical Formulation & Key Details</h4>
+        <div class="tech-content">${formatTechnical(topic.technical)}</div>
+      </div>
+
+      <div class="panel trap">
+        <h4>⚠️ AKTU Exam Trap</h4>
+        <p>${topic.trap}</p>
+      </div>
+
+      <div class="panel res">
+        <h4>🎥 Curated Resources</h4>
+        <div class="res-links">
+          ${topic.resources.map(r=>`<a class="res-link" href="${r.url}" target="_blank" rel="noopener">
+            <span>▶</span><span style="flex:1;">${r.name}</span><span class="rtype">Open ↗</span>
+          </a>`).join('')}
+        </div>
+      </div>
+
+      <div class="drawer-actions">
+        ${done
+          ? `<button class="btn btn-outline" disabled>✓ Completed</button>`
+          : `<button class="btn btn-emerald" onclick="completeTopic()">Mark Complete +${topic.xp} XP</button>`}
+        <button class="btn btn-outline" onclick="closeDrawer()">Close</button>
+      </div>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+
+render();
+</script>
+</body>
+</html>
