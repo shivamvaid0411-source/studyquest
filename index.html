@@ -1168,6 +1168,27 @@ render();
   // Run the function when the page loads
   tallyPageView();
 </script>
+// ---- PAGE VIEW TRACKER ----
+<script>
+async function recordPageView() {
+  if (!db) return;
+  try {
+    await db.collection('analytics').doc('siteViews').set({
+      count: firebase.firestore.FieldValue.increment(1),
+      lastViewed: firebase.firestore.FieldValue.serverTimestamp()
+    }, { merge: true });
 
+    await db.collection('pageViews').add({
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+      userAgent: navigator.userAgent,
+      referrer: document.referrer || 'direct'
+    });
+    console.log('Page view recorded successfully in Firebase!');
+  } catch (e) {
+    console.warn('Could not record page view:', e);
+  }
+}
+recordPageView();
+</script>
 </body>
 </html>
