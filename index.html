@@ -1140,5 +1140,34 @@ render();
   const app = initializeApp(firebaseConfig);
   const analytics = getAnalytics(app);
 </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-app.js";
+  import { getFirestore, doc, setDoc, increment } from "https://www.gstatic.com/firebasejs/10.13.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    projectId: "studyquest-25e13",
+    // Add your other config keys here
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  async function tallyPageView() {
+    const viewRef = doc(db, "analytics", "pageViews");
+    try {
+      // setDoc with { merge: true } creates the document if it doesn't exist
+      await setDoc(viewRef, {
+        views: increment(1)
+      }, { merge: true });
+      console.log("View registered successfully!");
+    } catch (error) {
+      console.error("Failed to update views. Check browser console & security rules:", error);
+    }
+  }
+
+  // Run the function when the page loads
+  tallyPageView();
+</script>
+
 </body>
 </html>
