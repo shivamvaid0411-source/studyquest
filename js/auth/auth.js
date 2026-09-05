@@ -14,14 +14,47 @@
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+/* EDIT THIS MESSAGE ANY TIME YOU WANT — it's the only place this text lives */
+const LOGIN_REQUIRED_MESSAGE = "Please log in. It will save your progress and help me manage my crowd also :(";
+
+function isLoggedIn(){
+  return !!(firebaseReady && auth && auth.currentUser);
+}
+
+function showLoginRequiredMessage(s,u,t){
+  const html = `
+  <div class="overlay auth-overlay" id="loginRequiredOverlay" onclick="if(event.target===this) closeLoginRequiredMessage()">
+    <div class="drawer" style="max-width:400px; text-align:center;">
+      <div class="drawer-head" style="justify-content:flex-end;">
+        <button class="close-x" onclick="closeLoginRequiredMessage()">✕</button>
+      </div>
+      <div style="font-size:40px; margin-bottom:14px;">🔒</div>
+      <h2 style="margin-bottom:10px;">Log In to Continue</h2>
+      <p style="color:var(--text-dim); font-size:14.5px; margin-bottom:22px;">${LOGIN_REQUIRED_MESSAGE}</p>
+      <button class="btn btn-purple" style="width:100%; margin-bottom:10px;" onclick="closeLoginRequiredMessage(); openAuthModal('login')">Log In</button>
+      <button class="btn btn-outline" style="width:100%;" onclick="skipLoginPrompt(${s},${u},${t})">Skip for now 💔</button>
+    </div>
+  </div>`;
+  document.body.insertAdjacentHTML('beforeend', html);
+}
+function skipLoginPrompt(s,u,t){
+  closeLoginRequiredMessage();
+  activeTopicRef = {s,u,t};
+  renderDrawer();
+}
+function closeLoginRequiredMessage(){
+  const ov = document.getElementById('loginRequiredOverlay');
+  if(ov) ov.remove();
+}
 /* ---------- NAV AUTH AREA ---------- */
 function renderAuthArea(){
   const el = document.getElementById('authArea');
   if(!el) return;
   const user = firebaseReady && auth ? auth.currentUser : null;
   if(user){
+    const displayName = user.displayName || user.email.split('@')[0];
     el.innerHTML = `
-      <span class="pill" title="${user.email}">👤 ${user.email.split('@')[0]}</span>
+      <span class="pill" title="${user.email}">👤 ${displayName}</span>
       <button class="btn btn-outline btn-sm" onclick="logoutUser()">Log Out</button>`;
   } else {
     el.innerHTML = `<button class="btn btn-purple btn-sm" onclick="openAuthModal('login')">Log In</button>`;
@@ -44,8 +77,15 @@ function openAuthModal(mode){
       </p>
       <div id="authError" style="display:none; background:rgba(239,68,68,.12); border:1px solid rgba(239,68,68,.4); color:#FCA5A5; font-size:13px; padding:10px 13px; border-radius:10px; margin-bottom:14px;"></div>
       <form id="authForm" onsubmit="return false;">
+        ${!isLogin ? `
+        <div style="margin-bottom:12px;">
+          <label style="font-size:12.5px; color:var(--text-dim); display:block; margin-bottom:6px;">Your Name</label>
+          <input id="authName" type="text" placeholder="e.g. Shivam" autocomplete="name"
+            style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid var(--border); background:var(--bg2); color:var(--text); font-size:14px;">
+        </div>` : ''}
         <div style="margin-bottom:12px;">
           <label style="font-size:12.5px; color:var(--text-dim); display:block; margin-bottom:6px;">Email</label>
+     
           <input id="authEmail" type="email" placeholder="you@example.com" autocomplete="email"
             style="width:100%; padding:11px 13px; border-radius:10px; border:1.5px solid var(--border); background:var(--bg2); color:var(--text); font-size:14px;">
         </div>
@@ -83,7 +123,13 @@ function showAuthError(msg){
 function submitAuthForm(mode){
   const email = (document.getElementById('authEmail').value || '').trim();
   const password = document.getElementById('authPassword').value || '';
+  const nameField = document.getElementById('authName');
+  const name = nameField ? (nameField.value || '').trim() : '';
 
+  if(mode === 'signup' && !name){
+    showAuthError('Please enter your name.');
+    return;
+  }
   if(!EMAIL_REGEX.test(email)){
     showAuthError('Please enter a valid email address (e.g. name@gmail.com).');
     return;
@@ -97,13 +143,26 @@ function submitAuthForm(mode){
     return;
   }
 
-  const action = mode === 'signup'
-    ? auth.createUserWithEmailAndPassword(email, password)
-    : auth.signInWithEmailAndPassword(email, password);
-
-  action
-    .then(()=>{ closeAuthModal(); })
-    .catch(err=>{ showAuthError(friendlyAuthError(err)); });
+  if(mode === 'signup'){
+    auth.createUserWithEmailAndPassword(email, password)
+      .then(cred => {
+        return cred.user.updateProfile({displayName: name}).then(()=>{
+          renderAuthArea();
+          return db.collection('users').doc(cred.user.uid).set({
+            email: cred.user.email,
+            name: name,
+            xp: 0, streak: 0, completed: [],
+            createdAt: firebase.firestore.FieldValue.serverTimestamp()
+          }, {merge:true});
+        });
+      })
+      .then(()=>{ closeAuthModal(); })
+      .catch(err=>{ showAuthError(friendlyAuthError(err)); });
+  } else {
+    auth.signInWithEmailAndPassword(email, password)
+      .then(()=>{ closeAuthModal(); })
+      .catch(err=>{ showAuthError(friendlyAuthError(err)); });
+  }
 }
 
 function friendlyAuthError(err){

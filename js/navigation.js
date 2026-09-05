@@ -15,6 +15,10 @@ function backTo(view){ state.view=view; render(); }
 let activeTopicRef = null;
 function openTopic(s,u,t,locked){
   if(locked) return;
+  if(!isLoggedIn()){
+    showLoginRequiredMessage(s,u,t);
+    return;
+  }
   activeTopicRef = {s,u,t};
   renderDrawer();
 }
