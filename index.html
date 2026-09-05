@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyQuest — Turn Your Syllabus Into an Adventure</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <div class="brand" onclick="goHome()"><div class="brand-badge">🎮</div>StudyQuest</div>
+    <div class="nav-stats">
+      <span class="pill xp">⭐ <span id="xpDisplay">0</span> XP</span>
+      <span class="pill streak">🔥 <span id="streakDisplay">0</span> day streak</span>
+      <div class="mode-toggle">
+        <button id="tglAdv" class="adventure" onclick="setMode('adventure')">Adventure</button>
+        <button id="tglFoc" class="focused" onclick="setMode('focused')">Focused</button>
+      </div>
+      <div id="authArea" style="display:flex; align-items:center; gap:8px;"></div>
+    </div>
+  </div>
+</nav>
+
+<div id="app"></div>
+
+<div class="footer">
+  StudyQuest made by Shivam to gamify studying because he was bored.
+  <div class="footer-links">
+    <a href="shivamvaid.in" target="_blank" rel="noopener">🔗 Portfolio</a>
+    <span class="dot">·</span>
+    <a href="https://www.linkedin.com/in/shivam-vaid1604/" target="_blank" rel="noopener">💼 LinkedIn</a>
+  </div>
+</div>
+<div class="watermark"><span class="star">✦</span> Built by Shivam</div>
+
+<!-- Firebase (compat build — no bundler needed) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+
+<!-- Curriculum data (order: init first, subjects after, any order among subjects) -->
+<script src="js/data/00-init.js"></script>
+<script src="js/data/01-data-structures.js"></script>
+<script src="js/data/02-computer-organization.js"></script>
+<script src="js/data/03-digital-electronics.js"></script>
+<script src="js/data/04-discrete-structures.js"></script>
+<script src="js/data/05-universal-human-values.js"></script>
+<script src="js/data/06-verbal-ability.js"></script>
+
+<!-- App state -->
+<script src="js/state.js"></script>
+
+<!-- Render modules -->
+<script src="js/render/core.js"></script>
+<script src="js/render/home.js"></script>
+<script src="js/render/subjects.js"></script>
+<script src="js/render/adventure.js"></script>
+<script src="js/render/focused.js"></script>
+<script src="js/render/drawer.js"></script>
+
+<!-- Navigation / event handlers -->
+<script src="js/navigation.js"></script>
+
+<!-- Auth + cloud sync -->
+<script src="js/auth/firebase-config.js"></script>
+<script src="js/auth/auth.js"></script>
+
+<!-- Bootstrap (must load last) -->
+<script src="js/main.js"></script>
+</body>
+</html>
