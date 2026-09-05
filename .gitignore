@@ -8,5 +8,3 @@ Thumbs.db
 
 # Live Server / local server files
 .history/
-
-js/auth/firebase-config.js
